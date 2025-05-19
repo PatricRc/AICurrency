@@ -86,7 +86,12 @@ def get_dataframe(series_code, series_name, start_period, end_period):
 
 class EconomicChatbot:
     def __init__(self, exchange_rates_df):
-        self.client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+        api_key = os.getenv('OPENAI_API_KEY')
+        if not api_key:
+            st.error("OpenAI API key not found. Please add OPENAI_API_KEY to your secrets.")
+            self.client = None
+        else:
+            self.client = OpenAI(api_key=api_key)
         self.conversation_history = []
         self.exchange_rates = exchange_rates_df
     
@@ -115,6 +120,10 @@ class EconomicChatbot:
     
     def get_streaming_response(self, prompt):
         try:
+            if self.client is None:
+                st.error("OpenAI client not initialized. Please configure your API key.")
+                return None
+                
             full_prompt = self.get_context_prompt() + "\n\nHistorial de conversación:\n"
             
             for msg in self.conversation_history[-3:]:
@@ -147,7 +156,12 @@ class EconomicChatbot:
 
 class ReportGenerator:
     def __init__(self, exchange_rates_df):
-        self.client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+        api_key = os.getenv('OPENAI_API_KEY')
+        if not api_key:
+            st.error("OpenAI API key not found. Please add OPENAI_API_KEY to your secrets.")
+            self.client = None
+        else:
+            self.client = OpenAI(api_key=api_key)
         self.exchange_rates = exchange_rates_df
     
     def get_context_prompt(self):
@@ -179,6 +193,10 @@ class ReportGenerator:
     
     def generate_report(self):
         try:
+            if self.client is None:
+                st.error("OpenAI client not initialized. Please configure your API key.")
+                return None
+                
             response = self.client.chat.completions.create(
                 model="o4-mini-2025-04-16",
                 messages=[
@@ -458,3 +476,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
