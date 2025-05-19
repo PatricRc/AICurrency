@@ -91,7 +91,11 @@ class EconomicChatbot:
             st.error("OpenAI API key not found. Please add OPENAI_API_KEY to your secrets.")
             self.client = None
         else:
-            self.client = OpenAI(api_key=api_key)
+            try:
+                self.client = OpenAI(api_key=api_key)
+            except Exception as e:
+                st.error(f"Error initializing OpenAI client: {str(e)}")
+                self.client = None
         self.conversation_history = []
         self.exchange_rates = exchange_rates_df
     
@@ -161,7 +165,11 @@ class ReportGenerator:
             st.error("OpenAI API key not found. Please add OPENAI_API_KEY to your secrets.")
             self.client = None
         else:
-            self.client = OpenAI(api_key=api_key)
+            try:
+                self.client = OpenAI(api_key=api_key)
+            except Exception as e:
+                st.error(f"Error initializing OpenAI client: {str(e)}")
+                self.client = None
         self.exchange_rates = exchange_rates_df
     
     def get_context_prompt(self):
